@@ -20,18 +20,63 @@
           mapTypeId: google.maps.MapTypeId.ROADMAP
         };
 
+        
         var kmlURL = 'https://dl.dropboxusercontent.com/s/a6qkfta0542jjd8/8449.kml?token_hash=AAFT0a0okTPDXYlLDXu067281DFqPlCyJfqonm1WF4M8Nw&dl=1';
+        
         var myMap = new google.maps.Map(document.getElementById("map_canvas"),
             mapOptions);
-        var myParser = new geoXML3.parser({map: myMap});
+
+        var myParser = new geoXML3.parser({map: myMap,
+                                           afterParse: useTheData
+                                          });
         myParser.parse(kmlURL);
-      
+
         /*
-        var ctaLayer = new google.maps.KmlLayer({
-             url:  kmlURL
-               });
-            ctaLayer.setMap(myMap);
+        var ctaLayer = new google.maps.KmlLayer(kmlURL);
+
+        ctaLayer.setMap(myMap);
+        google.maps.event.addListener(ctaLayer, 'click', function(obj){
+                     alert(obj.featureData.name);
+            });
         */
+         
+        
+      }
+      function useTheData(doc){
+          var geoXmlDoc = doc[0];
+          for (var i = 0; i < geoXmlDoc.placemarks.length; i++){
+              var placemark = geoXmlDoc.placemarks[i];
+              /*var kmlStrokeColor = kmlColor(placemark.style.color);
+              var kmlFillColor = kmlColor(placemark.style.fillcolor);
+              */
+              var normalStyle = {
+                                  strokeColor: placemark.style.strokeColor,
+                                  strokeWeight: placemark.style.width,
+                                  strokeOpacity: placemark.style.strokeOpacity,
+                                  fillColor: placemark.style.fillColor,
+                                  fillOpacity: placemark.style.fillOpacity
+                                 };
+              placemark.polygon.normalStyle = normalStyle;
+              placemark.polygon.clicked = 0;
+              highlightPoly(placemark.polygon);
+          }
+      }
+      var highlightOptions = {fillColor: "#FFFF00", strokeColor: "#000000", 
+                              fillOpacity: 0.9, strokeWidth: 10};
+
+      function highlightPoly(poly){
+         google.maps.event.addListener(poly,"click",function() {
+         if (poly instanceof google.maps.Polygon) {
+             if(poly.clicked == 0){
+              poly.setOptions(highlightOptions);
+              poly.clicked = 1;
+             }
+             else{
+              poly.setOptions(poly.normalStyle);
+              poly.clicked = 0;
+             }
+          }
+         });
       }
     </script>
 
