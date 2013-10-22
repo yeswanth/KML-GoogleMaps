@@ -10,6 +10,8 @@
     </style>
         <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCh8b3X8KrZsBoohtomZS3gyXCjmqXTbE0&sensor=false" >
      </script>
+     <script type='text/javascript' src='{{ url_for('static', filename='js/geoxml3.js') }}'>
+     </script>
     <script type="text/javascript">
       function initialize() {
         var mapOptions = {
@@ -17,12 +19,19 @@
           zoom: 11,
           mapTypeId: google.maps.MapTypeId.ROADMAP
         };
-        var map = new google.maps.Map(document.getElementById("map_canvas"),
+
+        var kmlURL = 'https://dl.dropboxusercontent.com/s/a6qkfta0542jjd8/8449.kml?token_hash=AAFT0a0okTPDXYlLDXu067281DFqPlCyJfqonm1WF4M8Nw&dl=1';
+        var myMap = new google.maps.Map(document.getElementById("map_canvas"),
             mapOptions);
+        var myParser = new geoXML3.parser({map: myMap});
+        myParser.parse(kmlURL);
+      
+        /*
         var ctaLayer = new google.maps.KmlLayer({
-             url:  'https://dl.dropboxusercontent.com/s/5zf60wm120o4gq4/kml_samples.kml?token_hash=AAFQU9_J8J3IlT6UelX76faqJhblqlJnG7tUCLgO9cX3XA&dl=1'
+             url:  kmlURL
                });
-            ctaLayer.setMap(map);
+            ctaLayer.setMap(myMap);
+        */
       }
     </script>
 
