@@ -20,13 +20,14 @@
           mapTypeId: google.maps.MapTypeId.ROADMAP
         };
 
-        
+        var geoXmlDoc = null; 
         var kmlURL = 'https://dl.dropboxusercontent.com/s/a6qkfta0542jjd8/8449.kml?token_hash=AAFT0a0okTPDXYlLDXu067281DFqPlCyJfqonm1WF4M8Nw&dl=1';
         
         var myMap = new google.maps.Map(document.getElementById("map_canvas"),
             mapOptions);
 
         var myParser = new geoXML3.parser({map: myMap,
+                                           suppressInfoWindow:true,
                                            afterParse: useTheData
                                           });
         myParser.parse(kmlURL);
@@ -43,7 +44,7 @@
         
       }
       function useTheData(doc){
-          var geoXmlDoc = doc[0];
+          geoXmlDoc = doc[0];
           for (var i = 0; i < geoXmlDoc.placemarks.length; i++){
               var placemark = geoXmlDoc.placemarks[i];
               /*var kmlStrokeColor = kmlColor(placemark.style.color);
@@ -58,25 +59,48 @@
                                  };
               placemark.polygon.normalStyle = normalStyle;
               placemark.polygon.clicked = 0;
-              highlightPoly(placemark.polygon);
+              addEventsPoly(placemark.polygon);
           }
       }
       var highlightOptions = {fillColor: "#FFFF00", strokeColor: "#000000", 
                               fillOpacity: 0.9, strokeWidth: 10};
 
-      function highlightPoly(poly){
+      function highlightPoly(poly, options){
+         poly.setOptions(options);
+      }
+      function addEventsPoly(poly){
          google.maps.event.addListener(poly,"click",function() {
          if (poly instanceof google.maps.Polygon) {
              if(poly.clicked == 0){
-              poly.setOptions(highlightOptions);
+              highlightPoly(poly, highlightOptions);
+              highlightAdjacent(poly);
               poly.clicked = 1;
              }
              else{
-              poly.setOptions(poly.normalStyle);
+              highlightPoly(poly, poly.normalStyle);
               poly.clicked = 0;
              }
           }
          });
+      }
+      function highlightAdjacent(poly){
+          var poly_paths = poly.getPath().getArray();
+          for (var i = 0; i < geoXmlDoc.placemarks.length; i++){
+               var placemark = geoXmlDoc.placemarks[i];
+               if(placemark.polygon){
+                  var paths = placemark.polygon.getPath().getArray();
+                  for(var j=0; j<poly_paths.length; j++){
+                    for(var k=0;k<paths.length;k++){
+                       if((poly_paths[j].lb == paths[k].lb) &&
+                                 (poly_paths[j].mb == paths[k].mb)){
+                           highlightPoly(placemark.polygon, highlightOptions);
+                           break;
+                       }
+                    }
+                  }
+               }    
+          }
+        
       }
     </script>
 
