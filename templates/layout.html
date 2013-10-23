@@ -21,13 +21,24 @@
         };
 
         var geoXmlDoc = null; 
+        
         var kmlURL = 'https://dl.dropboxusercontent.com/s/a6qkfta0542jjd8/8449.kml?token_hash=AAFT0a0okTPDXYlLDXu067281DFqPlCyJfqonm1WF4M8Nw&dl=1';
         
+        /*
+        var kmlURL = 'https://dl.dropboxusercontent.com/s/vcropcl1l1v21nh/polygons.kml?token_hash=AAEyHJkVcO_H6xbXmd5gzU-_92vZhAdyxQ0MMzqliVv7Bg&dl=1';
+        */
+        /*
+        var kmlURL = 'https://dl.dropboxusercontent.com/s/ztnimpt4lbld0w6/polygon-simple.kml?token_hash=AAHXlQTw1wTq_ffhXzWMjPgZEwDnsPFyvrJvmd62qAx-Xw&dl=1';
+        */
+        /*
+        var kmlURL = 'https://dl.dropboxusercontent.com/s/p3mi0ose3rvxodb/1polygon.kml?token_hash=AAFheRoPvTi-PkOMlR0Aw7QlBujSATkWuLAVOpE8jjCKaw&dl=1';
+       */
+
         var myMap = new google.maps.Map(document.getElementById("map_canvas"),
             mapOptions);
 
         var myParser = new geoXML3.parser({map: myMap,
-                                           suppressInfoWindow:true,
+                                           suppressInfoWindows:true,
                                            afterParse: useTheData
                                           });
         myParser.parse(kmlURL);
@@ -57,9 +68,11 @@
                                   fillColor: placemark.style.fillColor,
                                   fillOpacity: placemark.style.fillOpacity
                                  };
-              placemark.polygon.normalStyle = normalStyle;
-              placemark.polygon.clicked = 0;
-              addEventsPoly(placemark.polygon);
+              if(placemark.polygon){
+                  placemark.polygon.normalStyle = normalStyle;
+                  placemark.polygon.clicked = 0;
+                  addEventsPoly(placemark.polygon);
+              }
           }
       }
       var highlightOptions = {fillColor: "#FFFF00", strokeColor: "#000000", 
@@ -76,10 +89,12 @@
               highlightAdjacent(poly);
               poly.clicked = 1;
              }
+             /*
              else{
               highlightPoly(poly, poly.normalStyle);
               poly.clicked = 0;
              }
+             */
           }
          });
       }
